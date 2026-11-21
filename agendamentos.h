@@ -9,12 +9,18 @@
      
      char placa[9];
      char ano_modelo[10];
-     unsigned int dia, mes, ano; 
+     char data[20];
      char hora[8]; 
+     char cliente[50];
+     char status[50];
+     char servico[50]; 
+     float descont; 
+     float valor; 
+
  } Agendar[100]; 
  
 
-  
+ void agendamentos(void);  
 
  extern char placa_temp[9];
  extern char anomodelo_temp[10];

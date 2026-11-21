@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include "login.h"
 #include "agendamentos.h"
+#include "servicos.h"
+#include "concluidos.h"
+#include "funcoes.h"
 int adm = 1234;  
 int adm_s;
 
@@ -14,16 +17,18 @@ int main(){
  
     short int opcao; 
 
+  do { 
+
     printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
     printf("|         LavaFlow         | \n");
     printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
 
     printf("1-Login. \n"
            "2-Cadastrar \n"
-           "3-Configuração de serviços:\n"
+           "3-Configuracao de servicos:\n"
            "4-Fechando programa...\n");
 
-    do {
+   
 
        scanf(" %hd", &opcao);
            limpar_buffer();
@@ -36,7 +41,8 @@ int main(){
                   if (login() == 1){
                            
                            memset(&opcao, 0, sizeof(opcao)); 
-
+                               
+                           do { 
                                      printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
                                      printf("|         LavaFlow         | \n");
                                      printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
@@ -48,12 +54,15 @@ int main(){
                                             "5-Agendados:\n"
                                             "6-Relatorio:\n"
                                             "7-Sair:\n");   
-                               do {       
+                                     
                                             scanf(" %hd", &opcao);
+                                             limpar_buffer();
+                                             
                                      switch (opcao){
                                      
                                             case 1:
-                                        
+                                                  agendamentos();
+
                                                   break;
 
                                             case 2:
@@ -116,7 +125,7 @@ int main(){
              case 3: 
                      
                     memset(&adm_s, 0, sizeof(adm_s));
-                 printf("Configuração de Serviços:\n"); 
+                 printf("Configuracao de Servicos:\n"); 
                     
                       printf("Senha ADM:\n"); 
                          scanf(" %d", &adm_s);
@@ -125,7 +134,37 @@ int main(){
                           if(adm_s == adm){
 
                              printf("Acesso liberado...\n");
-                               ///  cadastrar_login();
+                                           
+                                            memset(&opcao, 0, sizeof(opcao));
+                                      do{ 
+                                          printf("1-Cadastro de servicos:\n2-Atualizar servico:\n3-Excluir servico:\n4-Sair:\n");  
+
+                                          
+                                               scanf(" %d", &opcao);  
+                                                limpar_buffer(); 
+
+                                             switch (opcao)
+                                             {
+                                                case 1:
+                                                     tipo_servicos();
+                                                      break;
+                                                
+                                                case 2:
+                                                      atualizar_servicos();
+                                                       break;
+                                                
+                                                 case 3:
+                                                       excluir_servico(); 
+                                                        break; 
+                                                 case 4: 
+                                                   printf("Saindo...\n");
+                                                    break;
+                                             default:
+                                                  printf("Opcao invalida.\n");
+                                                 
+                                             }
+                                          }while(opcao != 4); 
+                                            
                                 return 1;
                            } else{
                                printf("Senha errada.\n");
@@ -140,7 +179,7 @@ int main(){
                  printf("Opcao invalida \n"); 
        }
 
-}while(opcao != 3); 
+}while(opcao != 4); 
 
 
     

@@ -3,21 +3,22 @@
 #include <time.h>
 #include <ctype.h>
 #include "servicos.h"
+#include "funcoes.h"
 #define SERVICOS "servicos.txt"
 #define SERVTEMP "arqtemposerv.txt"
 
 
 Configurar config; 
-int j, id_r;
-short int op = 0; 
-char ler[256]; 
+int id_r;
+int id_temp;
+char op, op_s; 
 float valor_temp;
 float desconto_temp;
+char tipo_temp[50];
+char tempo_temp[10];
+char listar[256];
 
-void limpar_buffer(void){
-    int c;
-    while((c = getchar()) != '\n' && c != EOF){}
-  }
+
 
 void cabecalho_servicos(void){
   FILE *arq = fopen(SERVICOS, "r"); 
@@ -29,13 +30,15 @@ void cabecalho_servicos(void){
         return; 
       }    
 
-            fprintf(arq, "Id;Tipo;Valor;Desconto;Tempo\n"); 
+            fprintf(arq, " Id;Tipo;Valor;Desconto;Tempo\n"); 
       }
       fclose(arq);  
       }  
 
 
  void tipo_servicos(void){
+    
+   cabecalho_servicos(); 
 
     FILE *arc = fopen(SERVICOS, "a");
        if (arc == NULL){
@@ -43,37 +46,40 @@ void cabecalho_servicos(void){
             return;
        }
 
-          for(j = 0; j < 50; j++){
-
-            config[j].id = j + 1; 
+          for(int i = 0; i < 50; i++){
+            
+             printf("Indice:\n");
+               scanf(" %d", &config[i].id);
+                 limpar_buffer(); 
           
              printf("Tipo:\n"); 
-              fgets(config[j].tipo, sizeof(config[j].tipo), stdin);
-                config[j].tipo[strcspn(config[j].tipo, "\r""\r")] = '\0';
+              fgets(config[i].tipo, sizeof(config[i].tipo), stdin);
+                config[i].tipo[strcspn(config[i].tipo, "\r""\n")] = '\0';
              
              printf("Valor:\n");
-               scanf(" %f", &config[j].valor);
+               scanf(" %f", &config[i].valor);
                 limpar_buffer();
 
              printf("Desconto:\n");
-                scanf(" %f", &config[j].desconto);
+                scanf(" %f", &config[i].desconto);
                   limpar_buffer();
            
              printf("Tempo:\n");
-               fgets(config[j].tempo, sizeof(config[j].tempo), stdin);
-                config[j].tempo[strcspn(config[j].tempo, "\r""\n")] = '\0';
+               fgets(config[i].tempo, sizeof(config[i].tempo), stdin);
+                config[i].tempo[strcspn(config[i].tempo, "\r""\n")] = '\0';
 
-              fprintf(arc, "%d;%s;%.2f;%.2f;%s\n", config[j].id, config[j].tipo, config[j].valor, config[j].desconto, config[j].tempo);  
+              fprintf(arc, " %d;%s;%.2f;%.2f;%s\n", config[i].id, config[i].tipo, config[i].valor, config[i].desconto, config[i].tempo);  
               fflush(arc); 
 
-              printf("Novo cadastro?\n1-Sim.\n2-Nao.\n");
-                scanf(" %hd", &op);
-                  if(op == 1){
-                    return; 
-                  }
-                  if(op == 2){
-                    break;
-                  } 
+              printf("Novo cadastro?\nDigite 's' -Sim.\nDigite 'n' -Nao.\n");
+                scanf(" %c", &op);
+                  limpar_buffer();
+
+                op_s = tolower(op); 
+              
+                if ( op_s != 's'){
+                  break;
+                }
           
            }
            fclose(arc);
@@ -91,7 +97,6 @@ void cabecalho_servicos(void){
       printf("Erro ao abrir o arquivo.\n"); 
       if (arq != NULL){fclose(arq);}
       if (temp != NULL){fclose(temp);}
-      return;
      }
 
      printf("Qual o indice:\n"); 
@@ -99,14 +104,16 @@ void cabecalho_servicos(void){
        limpar_buffer(); 
 
     
-         fgets(ler, sizeof(ler), arq); 
-         fputs(ler, temp); 
+         fgets(listar, sizeof(listar), arq); 
+         fputs(listar, temp); 
 
-      while(fscanf(arq, " %d; %49[^;];%.2f;%.2f;9[^;]", &id_temp, &tipo_temp, &valor_temp, &desconto_temp, &tempo_temp) == 5){
+      while(fscanf(arq, " %d;%49[^;\r\n];%f;%f;%9[^;\r\n]", &id_temp, &tipo_temp, &valor_temp, &desconto_temp, &tempo_temp) == 5){
                 if(id_r == id_temp){
                   printf("Cadastro encontrado.\n");
+
+                        printf("%d\n%s\n%.2f\n%.2f\n%s\n", id_temp, tipo_temp, valor_temp, desconto_temp, tempo_temp); 
                             
-                        printf("Tipo do serviço:\n");
+                        printf("Tipo do servico:\n");
                          fgets(tipo_temp, sizeof(tipo_temp), stdin);
                            tipo_temp[strcspn(tipo_temp, "\r""\n")] = '\0';
                            
@@ -129,7 +136,7 @@ void cabecalho_servicos(void){
                    fprintf(temp,"%d;%s;%.2f;%.2f;%s\n", id_temp, tipo_temp, valor_temp, desconto_temp, tempo_temp);
                    atualizado = 1; 
                 } else {
-                   fprintf(temp,"%d;%s;%.2f;%.2f;%s\n", config[j].id, config[j].tipo, config[j].valor, config[j].desconto, config[j].tempo);
+                   fprintf(temp,"%d;%s;%.2f;%.2f;%s\n", id_temp, tipo_temp, valor_temp, desconto_temp, tempo_temp);
                  }
        }
         fclose(arq);
@@ -148,5 +155,47 @@ void cabecalho_servicos(void){
  }
 
  void excluir_servico(void){
-  
+
+  short int excluido = 0; 
+
+     FILE *arq = fopen(SERVICOS, "r");
+     FILE *temp = fopen(SERVTEMP, "w"); 
+
+       if(arq == NULL || temp == NULL){
+            printf("Erro ao abrir o arquivo.\n"); 
+         if (arq != NULL){fclose(arq);}
+         if (temp != NULL){fclose(temp);}
+        } 
+
+         
+
+         printf("Indice:\n");
+            scanf(" %d", &id_r);
+             limpar_buffer();
+              
+        fgets(listar, sizeof(listar), arq); 
+        fputs(listar, temp); 
+       
+     while(fscanf(arq, " %d;%49[^;\r\n];%f;%f;%9[^;\r\n]", &id_temp, &tipo_temp, &valor_temp, &desconto_temp, &tempo_temp) == 5){
+          
+         if(id_r == id_temp){
+               excluido = 1; 
+            } else {
+             fprintf(temp,"%d;%s;%.2f;%.2f;%s\n", id_temp, tipo_temp, valor_temp, desconto_temp, tempo_temp);
+           }
+     }      
+
+        fclose(arq);
+        fclose(temp);
+
+        if (excluido == 1){
+          remove(SERVICOS);
+          rename(SERVTEMP, SERVICOS);
+          printf("Servico excluido com sucesso.\n"); 
+        } else {
+          remove(SERVTEMP);
+          printf("Numero de indice %d nao encontrado.\n", id_temp); 
+        }
+
+
  }

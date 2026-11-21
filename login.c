@@ -2,6 +2,7 @@
 #include <ctype.h> 
 #include <string.h> 
 #include "login.h"
+#include "funcoes.h"
 #define MASTERLOGIN "banco_login.txt"
 
   cadastrologin cadastro; 
@@ -10,15 +11,12 @@
  char email_temp[100], email_r[100];
  char cpf_temp[15], cpf_r[15]; 
  char senha_temp[10], senha_r[10]; 
- int i;
+ int i = 0;
  short int ok = 0; 
  
 
 
-void limpar_buffer(void){
-    int c;
-    while((c = getchar()) != '\n' && c != EOF){}
-  }
+
 
 void garantir_cabecalho(void){
   FILE *arq = fopen(MASTERLOGIN, "r"); 

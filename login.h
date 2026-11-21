@@ -22,7 +22,7 @@
   int login(); 
   int validacao_cadatro();
   void cadastrar_login(void);  
-  void limpar_buffer();
+  
   
 
  #endif

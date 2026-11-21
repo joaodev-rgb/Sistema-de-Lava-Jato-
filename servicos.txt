@@ -1,0 +1,4 @@
+ Id;Tipo;Valor;Desconto;Tempo
+ 1;Lavagem Simples;60.00;0.00;0:30min
+ 2;Lavagem detalhada;120.00;0.00;1:30h
+ 3;Higienizacao interna;140.00;0.00;4h
