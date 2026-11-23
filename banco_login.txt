@@ -1,3 +1,0 @@
-Nome     ;Email      ;CPF      ;Senha
-Joao Marcos ;ojoao@gmail.com;12345678910;123456
-Luciano;luci@gmail.com;74185296310;123456

@@ -37,7 +37,6 @@ int main(){
        {
              case 1:
 
-
                   if (login() == 1){
                            
                            memset(&opcao, 0, sizeof(opcao)); 
@@ -59,41 +58,27 @@ int main(){
                                              limpar_buffer();
                                              
                                      switch (opcao){
-                                     
                                             case 1:
                                                   agendamentos();
-
                                                   break;
-
                                             case 2:
-
+                                                  atualizar_agendamento();
                                                   break;
-
                                             case 3:  
                                                   break;      
-                                            
                                             case 4:
-
+                                                  servico_concluidos(); 
                                                   break; 
-
                                             case 5: 
-                                                 
+                                                  listar_agendamentos();
                                                   break;
-
                                             case 6:
-
                                                   break;
-
                                             case 7:
-
-                                                  break;  
-
-                                         
-
-                                                              
+                                                  printf("Saindo do menu...\n"); 
+                                                  break;                        
                                             default:
-                                     
-                            
+                                              printf("Opcao invalida!!\n");
                                            }  
                                }while(opcao != 7);      
 
