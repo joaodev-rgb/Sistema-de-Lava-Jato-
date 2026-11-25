@@ -6,6 +6,7 @@
  void cabecalho_agendamentos(void);
  void agendamentos(void);
  int conferir_placa();  
+ int consultar_por_placa(void);
 
  typedef struct{
      

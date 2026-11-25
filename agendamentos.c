@@ -26,6 +26,7 @@
  char servico_temp[50];
  char nomeatendente[100];
  char CPF[15];
+ static short int ok_r = 0;
  static char placabuca[9];
  static short int atualizado = 0;
  
@@ -205,25 +206,42 @@ void agendamentos(void){
                 
                 fflush(arc);                                                
              } 
-                                                            
+
+             //-------Orden de Serviço------//
+
+           printf("------------OS----------\n");
+           printf("Placa do carro %s\n", agendar[j].placa);
+           printf("Ano do Modelo %s\n", agendar[j].ano_modelo);
+           printf("Servico %s\n",agendar[j].servico);
+           printf("Cliente %s\n", agendar[j].cliente);
+           printf("Data do agendamento %s\n", agendar[j].data);
+           printf("Previsao do horario entrega %s\n", agendar[j].hora);
+           printf("Desconto %.2f\n", agendar[j].descont);
+           printf("Valor %.2f\n",agendar[j].valor);
+           printf("--------------------------------------\n");
+           printf("Servico registrado por %s\n", nome_temp);
+           printf("----------------------------------------\n");
+           printf("==========LavaFlow============\n");
+
              }
              fclose(arc);
              fclose(arq); 
 }
 
 void listar_agendamentos(void){
+    static int giros = 0;
     FILE *arc = fopen(AGENDAR, "r");
     if (arc == NULL){
         printf("Nenhum agendamento encontrado.\n");
         return;
        }
 
-    fgets(ver, sizeof(ver), arc);
+    fgets(leitura, sizeof(leitura), arc);
 
     printf("\n%-10s || %-12s || %-20s || %-20s || %-12s || %-8s || %-10s || %-10s || %-15s\n", "Placa", "Ano-modelo", "Servico", "Cliente", "Data", "Hora", "Desconto", "Valor", "Status");
     printf("--------------------------------------------------------------------------------------------------------------------------------------------------------\n");
 
-    while(fscanf(arc, " %9[^;\r\n];%9[^;\r\n];%49[^;\r\n];%49[^;\r\n];%19[^;\r\n];%7[^;\r\n];%f;%f;%49[^;\r\n];",
+    while(fscanf(arc, " %9[^;\r\n];%9[^;\r\n];%49[^;\r\n];%49[^;\r\n];%19[^;\r\n];%7[^;\r\n];%f;%f;%49[^;\r\n];%99[^;\r\n];%14[^;\r\n]\n",
                         placa_temp,
                         anomodelo_temp,
                         servico_temp,
@@ -232,7 +250,9 @@ void listar_agendamentos(void){
                         hora_temp,
                         &desconto_temp,
                         &valor_temp,
-                        status_temp) == 9){
+                        status_temp,
+                        nomeatendente,
+                        CPF) == 11){
 
            printf("%-10s %-12s %-20s %-20s %-12s %-8s %-10.2f %-10.2f %-15s \n",
                    placa_temp,
@@ -244,11 +264,19 @@ void listar_agendamentos(void){
                    desconto_temp,
                    valor_temp,
                    status_temp);
+                   
+                   giros++;
            }
     printf("--------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+     if (giros == 0){
+      printf("Nenhum agendamento encontrado.\n");
+      fclose(arc); 
+      return; 
+     }
     fclose(arc);
 }
 void atualizar_agendamento(void){
+  printf("Atualizacoo de servico:\n");
   FILE *arc = fopen(AGENDAR, "r");
   FILE *temp = fopen(TEMP, "w");
       if(arc == NULL || temp == NULL){
@@ -257,24 +285,27 @@ void atualizar_agendamento(void){
         if(temp != NULL){fclose(temp);}
         return; 
       }
-      
-      fgets(ver, sizeof(ver), stdin);
-      fputs(ver, temp); 
+      printf("Placa:\n");
+       fgets(placabuca, sizeof(placabuca), stdin);
+        placabuca[strcspn(placabuca, "\r""\n")] = '\0';
+
+      fgets(ver, sizeof(ver), arc);
+       fputs(ver, temp); 
        while(fscanf(arc, " %9[^;\r\n];%9[^;\r\n];%49[^;\r\n];%49[^;\r\n];%19[^;\r\n];%7[^;\r\n];%f;%f;%49[^;\r\n];%99[^;\r\n];%14[^;\r\n]",
-                          &placa_temp,
-                          &anomodelo_temp,
-                          &servico_temp,
-                          &cliente_temp,
-                          &data_temp,
-                          &hora_temp, 
+                          placa_temp,
+                          anomodelo_temp,
+                          servico_temp,
+                          cliente_temp,
+                          data_temp,
+                          hora_temp, 
                           &desconto_temp, 
                           &valor_temp, 
-                          &status_temp, 
-                          &nomeatendente, 
+                          status_temp, 
+                          nomeatendente, 
                           &CPF) == 11){
+  
 
-
-        if(strcmp(placabuca, placa_temp) == 0){
+        if(strcmp(placa_temp, placabuca) == 0){
             
               printf("Qual o servico:\n");
                fgets(servico_temp, sizeof(servico_temp), stdin);
@@ -282,15 +313,16 @@ void atualizar_agendamento(void){
 
               printf("Cliente:\n");
                fgets(cliente_temp, sizeof(cliente_temp), stdin);
-                cliente_temp[strcmp(cliente_temp, "\r""\n")] = '\0';
+                cliente_temp[strcspn(cliente_temp, "\r""\n")] = '\0';
                 
               printf("Data:\n");
                fgets(data_temp, sizeof(data_temp), stdin); 
-                data_temp[strcmp(data_temp, "\r""\n")] = '\0'; 
+                data_temp[strcspn(data_temp, "\r""\n")] = '\0'; 
               
               printf("Hora:\n");
                fgets(hora_temp, sizeof(hora_temp), stdin);
-                hora_temp[strcmp(hora_temp, "\r""\n")] = '\0';
+                hora_temp[strcspn(hora_temp, "\r""\n")] = '\0';
+                //preciso incluir o preco 
 
                   // Condição de desconto 
               if(desconto_temp == 0){
@@ -308,7 +340,7 @@ void atualizar_agendamento(void){
                  auxiliar = (valor_temp * (auxiliar_dec / 100)); 
                  auxiliar_valor = (valor_temp - auxiliar);
            } 
-           fprintf(arc, " %s;%s;%s;%s;%s;%s;%.2f;%.2f;%s;%s;%s\n",
+           fprintf(temp, " %s;%s;%s;%s;%s;%s;%.2f;%.2f;%s;%s;%s\n",
                              placa_temp, 
                              anomodelo_temp, 
                              servico_temp, 
@@ -350,4 +382,48 @@ void atualizar_agendamento(void){
          }
 
 
+}
+int consultar_por_placa(void){
+    char placa_busca[20];
+    char placa_temp[20], modelo_temp[50], servico_temp[50], status_temp[20];
+
+    printf("Digite a placa:\n");
+    fgets(placa_busca, sizeof(placa_busca), stdin);
+    placa_busca[strcspn(placa_busca, "\r""\n")] = '\0';
+
+    FILE *arq = fopen(AGENDAR, "r");
+    if(arq == NULL){
+        printf("Erro ao abrir arquivo.\n");
+        return 0;
+    }
+
+    fgets(ver, sizeof(ver), arq);
+
+    ok_r = 0;
+    while(fscanf(arq, " %9[^;\r\n];%9[^;\r\n];%49[^;\r\n];%49[^;\r\n];%19[^;\r\n];%7[^;\r\n];%f;%f;%49[^;\r\n];%99[^;\r\n];%14[^;\r\n]",
+                          placa_temp,
+                          anomodelo_temp,
+                          servico_temp,
+                          cliente_temp,
+                          data_temp,
+                          hora_temp, 
+                          &desconto_temp, 
+                          &valor_temp, 
+                          status_temp, 
+                          nomeatendente, 
+                          &CPF) == 11){
+        if(strcmp(placa_temp, placa_busca) == 0){
+            ok_r = 1;
+            printf("\nPlaca: %s\n", placa_temp);
+            printf("Modelo: %s\n", anomodelo_temp);
+            printf("Status: %s\n", status_temp);
+            break;
+        }
+    }
+    fclose(arq);
+
+    if(ok_r == 0){
+        printf("Placa nao encontrada!\n");
+    }
+    return ok_r;
 }

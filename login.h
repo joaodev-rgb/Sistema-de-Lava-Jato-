@@ -22,6 +22,8 @@
   int login(); 
   int validacao_cadatro();
   void cadastrar_login(void);  
+  int excluir_funcionario();
+  int atualizar_funcionario(); 
   
   
 

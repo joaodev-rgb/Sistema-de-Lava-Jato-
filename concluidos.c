@@ -8,6 +8,7 @@
 #include "agendamentos.h"
 #include "login.h"
 #include "funcoes.h"
+#include "servicos.h"
 
 static char lendo[256];
 static char placa_conc[9];
@@ -45,25 +46,25 @@ void servico_concluidos(void){
         } 
             printf("Placa:\n"); 
               fgets(placa_conc, sizeof(placa_conc), stdin);
-               placa_conc[strcspn(placa_conc, "\n")] = '\0'; 
+               placa_conc[strcspn(placa_conc, "\r""\n")] = '\0'; 
 
               fgets(leitura, sizeof(leitura), arq); 
               fputs(leitura, temp); 
 
-           while(fscanf(arq, " %9[^;\r\n];%9[^;\r\n];%49[^;\r\n];%49[^;\r\n];%19[^;\r\n];%7[^;\r\n];%f;%f;%49[^;\r\n];%99[^;\r\n];%14[^;\r\n]",
-                          &placa_temp,
-                          &anomodelo_temp,
-                          &servico_temp,
-                          &cliente_temp,
-                          &data_temp,
-                          &hora_temp, 
+           while(fscanf(arq, " %9[^;\r\n];%9[^;\r\n];%49[^;\r\n];%49[^;\r\n];%19[^;\r\n];%7[^;\r\n];%f;%f;%49[^;\r\n];%99[^;\r\n];%14[^;\r\n]\n",
+                          placa_temp,
+                          anomodelo_temp,
+                          servico_temp,
+                          cliente_temp,
+                          data_temp,
+                          hora_temp, 
                           &desconto_temp, 
                           &valor_temp, 
-                          &status_temp, 
-                          &nomeatendente, 
-                          &CPF) == 11){
+                          status_temp, 
+                          nomeatendente, 
+                          CPF) == 11){
            
-             if(strcmp(placa_conc, placa_temp) == 0){
+             if(strcmp(placa_temp, placa_conc) == 0){
                     
                    printf("Altere o status para cocluido.\n");
                     fgets(status_temp, sizeof(status_temp), stdin);

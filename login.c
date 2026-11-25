@@ -4,6 +4,7 @@
 #include "login.h"
 #include "funcoes.h"
 #define MASTERLOGIN "banco_login.txt"
+#define TEMPO "logintemp.txt"
 
   cadastrologin cadastro; 
  char ler[256]; 
@@ -12,12 +13,9 @@
  char cpf_temp[15], cpf_r[15]; 
  char senha_temp[10], senha_r[10]; 
  int i = 0;
- short int ok = 0; 
+ static short int ok = 0; 
  
-
-
-
-
+ 
 void garantir_cabecalho(void){
   FILE *arq = fopen(MASTERLOGIN, "r"); 
  
@@ -66,8 +64,6 @@ int validacao_cadatro(){
 
 }     
       
-
-
 int conferir_login(){
 
     ok = 0; 
@@ -98,12 +94,7 @@ int conferir_login(){
             printf("Cadastro nao encontrado!\n"
                    "Tente novamente ou faca um cadastro\n");
                     return 0;
-          }
-
-      
-       
-
-          
+          }          
   }
 
  int login(){
@@ -166,10 +157,103 @@ void cadastrar_login(void){
       
       fclose(arc); 
 
-
-
-
-
-
 }
 
+int atualizar_funcionario(void){
+    char novo_nome[100];
+    char novo_cpf[15];
+    char nova_senha[10];
+
+    printf("Digite o CPF atual do funcionario:\n");
+    fgets(cpf_r, sizeof(cpf_r), stdin);
+    cpf_r[strcspn(cpf_r, "\r""\n")] = '\0';
+
+    FILE *arq = fopen(MASTERLOGIN, "r");
+    FILE *temp = fopen(TEMPO, "w");
+
+    if(arq == NULL || temp == NULL){
+        printf("Erro ao abrir arquivo.\n");
+        return 0;
+    }
+
+    fgets(ler, sizeof(ler), arq);
+    fputs(ler, temp); 
+
+    ok = 0;
+
+    while(fscanf(arq, " %99[^;\r\n];%99[^;\r\n];%14[^;\r\n];%9[^;\r\n]", nome_temp, email_temp, cpf_temp, senha_temp) == 4){
+        if(strcmp(cpf_temp, cpf_r) == 0){
+            ok = 1;
+
+            printf("Digite o novo nome:\n");
+            fgets(novo_nome, sizeof(novo_nome), stdin);
+            novo_nome[strcspn(novo_nome, "\r""\n")] = '\0';
+
+            printf("Digite o novo CPF:\n");
+            fgets(novo_cpf, sizeof(novo_cpf), stdin);
+            novo_cpf[strcspn(novo_cpf, "\r""\n")] = '\0';
+
+            printf("Digite a nova senha:\n");
+            fgets(nova_senha, sizeof(nova_senha), stdin);
+            nova_senha[strcspn(nova_senha, "\r""\n")] = '\0';
+
+            fprintf(temp, "%s;%s;%s;%s\n", novo_nome, email_temp, novo_cpf, nova_senha);
+        } else {
+            fprintf(temp, "%s;%s;%s;%s\n", nome_temp, email_temp, cpf_temp, senha_temp);
+        }
+    }
+
+    fclose(arq);
+    fclose(temp);
+
+    if(ok == 1){
+        remove(MASTERLOGIN);
+        rename(TEMPO, MASTERLOGIN);
+        printf("Funcionario atualizado!\n");
+        return 1;
+    } else {
+        remove(TEMPO);
+        printf("CPF nao encontrado!\n");
+        return 0;
+    }
+}
+int excluir_funcionario(void){
+    printf("Digite o CPF do funcionario para excluir:\n");
+    fgets(cpf_r, sizeof(cpf_r), stdin);
+    cpf_r[strcspn(cpf_r, "\r""\n")] = '\0';
+
+    FILE *arq = fopen(MASTERLOGIN, "r");
+    FILE *temp = fopen(TEMPO, "w");
+
+    if(arq == NULL || temp == NULL){
+        printf("Erro ao abrir arquivo.\n");
+        return 0;
+    }
+
+    fgets(ler, sizeof(ler), arq);
+    fputs(ler, temp); 
+    ok = 0;
+
+    while(fscanf(arq, " %99[^;\r\n];%99[^;\r\n];%14[^;\r\n];%9[^;\r\n]", nome_temp, email_temp, cpf_temp, senha_temp) == 4){
+        if(strcmp(cpf_temp, cpf_r) == 0){
+            ok = 1;
+            printf("Funcionario %s excluido!\n", nome_temp);
+            // nao escreve no temp, ou seja, apaga
+        } else {
+            fprintf(temp, "%s;%s;%s;%s\n", nome_temp, email_temp, cpf_temp, senha_temp);
+        }
+    }
+
+    fclose(arq);
+    fclose(temp);
+
+    if(ok == 1){
+        remove(MASTERLOGIN);
+        rename(TEMPO, MASTERLOGIN);
+        return 1;
+    } else {
+        remove(TEMPO);
+        printf("CPF nao encontrado!\n");
+        return 0;
+    }
+}

@@ -151,7 +151,6 @@ void cabecalho_servicos(void){
             printf("Indice: %d nao encontrado \n", id_r);
          }
 
-
  }
 
  void excluir_servico(void){

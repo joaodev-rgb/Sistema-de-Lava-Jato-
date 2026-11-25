@@ -1,0 +1,7 @@
+RELATORIO - 22/11/2026 ate 24/11/2026
+--------------------------------------------
+Placa;Servico;Cliente;Data;Valor;Atendente;Status
+
+Total: 0 | Concluidos: 0 | Cancelados: 0 | Pendentes: 4
+Faturamento: R$ 0.00
+Servico mais realizado: Nenhum (0 vezes)
